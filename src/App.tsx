@@ -72,7 +72,7 @@ export default function SplashPage() {
       >
         <div
           style={{
-            maxWidth: 720,
+            maxWidth: 920,
             width: "100%",
             textAlign: "center",
             display: "flex",
@@ -103,7 +103,7 @@ export default function SplashPage() {
             </span>
             <h1
               style={{
-                fontSize: "clamp(30px, 5.5vw, 52px)",
+                fontSize: "clamp(28px, 5vw, 52px)",
                 fontWeight: 800,
                 lineHeight: 1.15,
                 color: C.navy,
@@ -125,8 +125,8 @@ export default function SplashPage() {
               margin: 0,
             }}
           >
-            Tell us the outcome you're after — a hired team, a launched store, a
-            tax package, a finished manuscript, a 12-week health plan — and we
+            Tell us the outcome you're after: a hired team, a launched store,
+            a tax package, a finished manuscript, a 12-week health plan. We
             deliver it. Finished. On time. At a price you agree to before we
             start.
           </p>

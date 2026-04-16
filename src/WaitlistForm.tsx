@@ -16,21 +16,21 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 export default function WaitlistForm({
   variant = "light",
-  layout = "row",
   buttonLabel = "Join the Waitlist",
 }: {
   variant?: "light" | "dark";
-  layout?: "row" | "stack";
   buttonLabel?: string;
 }) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [desiredOutcomes, setDesiredOutcomes] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !firstName || !lastName) return;
     setStatus("submitting");
     setError(null);
 
@@ -38,13 +38,20 @@ export default function WaitlistForm({
       const res = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          desiredOutcomes,
+        }),
       });
 
       if (res.ok) {
         setStatus("success");
+        setFirstName("");
+        setLastName("");
         setEmail("");
-        setName("");
+        setDesiredOutcomes("");
         return;
       }
 
@@ -61,10 +68,20 @@ export default function WaitlistForm({
 
   const onDark = variant === "dark";
   const labelColor = onDark ? C.seafoam : C.muted;
+
+  const fieldLabelStyle: CSSProperties = {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 600,
+    color: onDark ? C.seafoam : C.navy,
+    marginBottom: 6,
+    textAlign: "left",
+  };
+
   const inputStyle: CSSProperties = {
     width: "100%",
-    padding: "14px 16px",
-    fontSize: 16,
+    padding: "12px 14px",
+    fontSize: 15,
     borderRadius: 10,
     border: onDark ? "1px solid rgba(190,233,232,0.25)" : `1px solid ${C.line}`,
     background: onDark ? "rgba(255,255,255,0.06)" : C.white,
@@ -73,7 +90,16 @@ export default function WaitlistForm({
     fontFamily: "inherit",
     boxSizing: "border-box",
   };
+
+  const textareaStyle: CSSProperties = {
+    ...inputStyle,
+    minHeight: 96,
+    resize: "vertical",
+    lineHeight: 1.5,
+  };
+
   const btnStyle: CSSProperties = {
+    width: "100%",
     padding: "14px 26px",
     fontSize: 16,
     fontWeight: 600,
@@ -84,7 +110,6 @@ export default function WaitlistForm({
     cursor: status === "submitting" ? "not-allowed" : "pointer",
     transition: "transform 0.2s, background 0.2s",
     fontFamily: "inherit",
-    whiteSpace: "nowrap",
   };
 
   if (status === "success") {
@@ -101,7 +126,8 @@ export default function WaitlistForm({
           color: onDark ? C.seafoam : "#166534",
           fontSize: 15,
           lineHeight: 1.6,
-          maxWidth: 520,
+          maxWidth: 560,
+          textAlign: "left",
         }}
       >
         <strong>You're on the list.</strong> We'll be in touch when we open
@@ -111,61 +137,101 @@ export default function WaitlistForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 560 }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ width: "100%", maxWidth: 560, textAlign: "left" }}
+    >
       <div
         style={{
-          display: "flex",
-          flexDirection: layout === "stack" ? "column" : "row",
-          gap: 10,
-          flexWrap: "wrap",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          marginBottom: 12,
         }}
       >
+        <label>
+          <span style={fieldLabelStyle}>First name</span>
+          <input
+            type="text"
+            name="firstName"
+            required
+            autoComplete="given-name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            disabled={status === "submitting"}
+            style={inputStyle}
+          />
+        </label>
+        <label>
+          <span style={fieldLabelStyle}>Last name</span>
+          <input
+            type="text"
+            name="lastName"
+            required
+            autoComplete="family-name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            disabled={status === "submitting"}
+            style={inputStyle}
+          />
+        </label>
+      </div>
+
+      <label style={{ display: "block", marginBottom: 12 }}>
+        <span style={fieldLabelStyle}>Email address</span>
         <input
           type="email"
           name="email"
           required
+          autoComplete="email"
           placeholder="you@example.com"
-          aria-label="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={status === "submitting"}
-          style={{ ...inputStyle, flex: "2 1 220px", minWidth: 200 }}
+          style={inputStyle}
         />
-        <input
-          type="text"
-          name="name"
-          placeholder="First name (optional)"
-          aria-label="First name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+      </label>
+
+      <label style={{ display: "block", marginBottom: 16 }}>
+        <span style={fieldLabelStyle}>
+          Desired outcomes{" "}
+          <span style={{ color: labelColor, fontWeight: 400 }}>(optional)</span>
+        </span>
+        <textarea
+          name="desiredOutcomes"
+          placeholder="What would you like us to deliver? A launched store, a hired team, a finished manuscript, a 12-week health plan…"
+          value={desiredOutcomes}
+          onChange={(e) => setDesiredOutcomes(e.target.value)}
           disabled={status === "submitting"}
-          style={{ ...inputStyle, flex: "1 1 160px", minWidth: 140 }}
+          style={textareaStyle}
         />
-        <button
-          type="submit"
-          disabled={status === "submitting"}
-          style={btnStyle}
-          onMouseEnter={(e) => {
-            if (status !== "submitting")
-              e.currentTarget.style.transform = "translateY(-1px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-          }}
-        >
-          {status === "submitting" ? "Joining…" : buttonLabel}
-        </button>
-      </div>
+      </label>
+
+      <button
+        type="submit"
+        disabled={status === "submitting"}
+        style={btnStyle}
+        onMouseEnter={(e) => {
+          if (status !== "submitting")
+            e.currentTarget.style.transform = "translateY(-1px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+        }}
+      >
+        {status === "submitting" ? "Joining…" : buttonLabel}
+      </button>
+
       <p
         style={{
-          marginTop: 10,
+          marginTop: 12,
           fontSize: 12,
           color: labelColor,
           lineHeight: 1.6,
         }}
       >
-        We'll only use your email to send you product updates. No spam. One-click
-        unsubscribe.
+        We'll only use your email to send you product updates. No spam.
+        One-click unsubscribe.
       </p>
       {error && (
         <p
