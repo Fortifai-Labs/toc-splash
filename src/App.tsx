@@ -116,6 +116,24 @@ export default function SplashPage() {
             </h1>
           </div>
 
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "10px 18px",
+              borderRadius: 999,
+              background: "rgba(95,168,211,0.10)",
+              border: `1px solid ${C.current}`,
+              color: C.ocean,
+              fontSize: 15,
+              fontWeight: 700,
+              letterSpacing: 0.3,
+            }}
+          >
+            Introducing Outcome as a Service<sup style={{ fontSize: 10, marginLeft: 2 }}>™</sup>
+          </div>
+
           <p
             style={{
               fontSize: "clamp(16px, 2vw, 19px)",
@@ -128,7 +146,7 @@ export default function SplashPage() {
             Tell us the outcome you're after: a hired team, a launched store,
             a tax package, a finished manuscript, a 12-week health plan. We
             deliver it. Finished. On time. At a price you agree to before we
-            start.
+            start. That's Outcome as a Service<sup style={{ fontSize: 10 }}>™</sup>.
           </p>
 
           <p
@@ -157,7 +175,8 @@ export default function SplashPage() {
         }}
       >
         <p style={{ fontSize: 12, color: C.onDarkFine, margin: 0 }}>
-          &copy; 2026 The Outcome Co.
+          &copy; 2026 The Outcome Co. &middot; Outcome as a Service
+          <sup style={{ fontSize: 9 }}>™</sup> is a trademark of The Outcome Co.
         </p>
       </footer>
     </div>
